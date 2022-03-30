@@ -29,12 +29,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-region: ${{ secrets.AWS_REGION }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Pulumi Up
+      - name: Pulumi install
         run: npm install
+      - name: Pulumi up
+        uses: pulumi/actions@v3
         id: pulumi
-        working-directory: networking
-      - uses: pulumi/actions@v3
-        with: 
+        with:
           command: up
           stack-name: dev
         env:
@@ -47,8 +47,9 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ steps.pulumi.hasuraEngineRepository.name }}
+          ECR_REPOSITORY: ${{ steps.pulumi.outputs.hasuraEngineRepositoryName }}
           IMAGE_TAG: ${{ github.sha }}
+        working-directory: engine
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./engine/
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

@@ -1,19 +1,10 @@
-import {ecrRepository} from "./ecr";
-import {hasuraEngineRds, hasuraMetadataRds} from "./rds";
+import { ecrRepository } from "./ecr";
+import { hasuraEngineRds, hasuraMetadataRds } from "./rds";
 
-export const hasuraEngineRepository = {
-    url: ecrRepository.repositoryUrl,
-    name: ecrRepository.name,
-};
+export const hasuraEngineRepositoryName = ecrRepository.name;
 
-export const hasuraEngineDatabase = {
-    name: hasuraEngineRds.dbName,
-    address: hasuraEngineRds.address,
-    port: hasuraEngineRds.port,
-};
+export const hasuraEngineDatabaseName = hasuraEngineRds.dbName;
+export const hasuraEngineDatabaseAddress = hasuraEngineRds.address;
 
-export const hasuraMetadataDatabase = {
-    name: hasuraMetadataRds.dbName,
-    address: hasuraMetadataRds.address,
-    port: hasuraMetadataRds.port,
-};
+export const hasuraMetadataDatabaseName = hasuraMetadataRds.dbName;
+export const hasuraMetadataDatabaseAddress = hasuraMetadataRds.address;
