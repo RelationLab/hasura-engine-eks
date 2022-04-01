@@ -22,7 +22,7 @@ export const baseTags = {
 };
 
 
-const secret = new aws.secretsmanager.Secret("secret");
+const secret = new aws.secretsmanager.Secret("hasura-engine");
 
 new aws.secretsmanager.SecretVersion("hasura-engine", {
     secretId: secret.id,

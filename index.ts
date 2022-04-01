@@ -1,5 +1,8 @@
-import { ecrRepository } from "./ecr";
-import { hasuraEngineRds, hasuraMetadataRds } from "./rds";
+import {secretId} from "./base";
+import {ecrRepository} from "./ecr";
+import {hasuraEngineRds, hasuraMetadataRds} from "./rds";
+
+export const hasuraEngineSecretId = secretId;
 
 export const hasuraEngineRepositoryName = ecrRepository.name;
 export const hasuraEngineRepositoryUrl = ecrRepository.repositoryUrl;
