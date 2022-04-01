@@ -35,13 +35,15 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: HASURA_GRAPHQL_DATABASE_URL
-              value: "postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.address }}:{{ .Values.database.port }}"
+              value: "postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.address }}:{{ .Values.database.port }}/{{ .Values.database.dbName }}"
             - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
-              value: "postgres://{{ .Values.metadataDatabase.user }}:{{ .Values.metadataDatabase.password }}@{{ .Values.metadataDatabase.address }}:{{ .Values.metadataDatabase.port }}"
+              value: "postgres://{{ .Values.metadataDatabase.user }}:{{ .Values.metadataDatabase.password }}@{{ .Values.metadataDatabase.address }}:{{ .Values.metadataDatabase.port }}/{{ .Values.metadataDatabase.dbName }}"
+            {{ if trim .Values.hasura.adminSecret }}
             - name: HASURA_GRAPHQL_ADMIN_SECRET
-              value: {{ .Values.hasura.adminSecret | quote }}
+              value: {{ trim .Values.hasura.adminSecret }}
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
-              value: {{ .Values.hasura.enableConsole | quote }}
+              value: "true"
+            {{ end }}
             - name: HASURA_GRAPHQL_DEV_MODE
               value: "false"
           ports:
@@ -51,10 +53,6 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthz
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
