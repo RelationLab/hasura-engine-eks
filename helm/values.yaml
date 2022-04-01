@@ -16,7 +16,6 @@ fullnameOverride: ""
 
 hasura:
   adminSecret: ""
-  enableConsole: true
 
 database:
   address: ""

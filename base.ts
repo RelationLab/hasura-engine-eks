@@ -6,6 +6,7 @@ const config = new pulumi.Config();
 const dbName = config.get("dbName") || "relation";
 const maintainer = config.require("maintainer");
 const dbPassword = config.requireSecret("dbPassword");
+const hasuraAdminSecret = config.getSecret("hasuraAdminSecret");
 const metadataDbPassword = config.requireSecret("metadataDbPassword");
 
 export const baseConfig = {
@@ -23,13 +24,14 @@ export const baseTags = {
 
 const secret = new aws.secretsmanager.Secret("hasura-engine");
 
-pulumi.all([dbPassword, metadataDbPassword]).apply(([dbPassword, metadataDbPassword]) => {
+pulumi.all([dbPassword, metadataDbPassword, hasuraAdminSecret]).apply(([dbPassword, metadataDbPassword, hasuraAdminSecret]) => {
 
     new aws.secretsmanager.SecretVersion("hasura-engine-db-password", {
         secretId: secret.id,
         secretString: JSON.stringify({
             "dbPassword": dbPassword,
             "metadataDbPassword": metadataDbPassword,
+            "hasuraAdminSecret": hasuraAdminSecret || "",
         }),
     });
 });
