@@ -21,15 +21,15 @@ export const baseTags = {
     PulumiStack: pulumi.getStack(),
 };
 
+export const secretId = pulumi.all([dbPassword, metadataDbPassword]).apply(([dbPassword, metadataDbPassword]) => {
+    const secret = new aws.secretsmanager.Secret("hasura-engine");
+    new aws.secretsmanager.SecretVersion("hasura-engine", {
+        secretId: secret.id,
+        secretString: JSON.stringify({
+            "dbPassword": dbPassword,
+            "metadataDbPassword": metadataDbPassword,
+        }),
+    });
 
-const secret = new aws.secretsmanager.Secret("hasura-engine");
-
-new aws.secretsmanager.SecretVersion("hasura-engine", {
-    secretId: secret.id,
-    secretString: JSON.stringify({
-        "dbPassword": dbPassword,
-        "metadataDbPassword": metadataDbPassword,
-    }),
+    return secret.id;
 });
-
-export const secretId = secret.id;
