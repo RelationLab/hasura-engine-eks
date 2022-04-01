@@ -8,7 +8,7 @@ image:
   repository: aws-ecr/hasura-engine
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 hasura:
   adminSecret: ""
-  enableConsole: false
+  enableConsole: true
 
 database:
   address: ""

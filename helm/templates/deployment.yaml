@@ -39,9 +39,9 @@ spec:
             - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
               value: "postgres://{{ .Values.metadataDatabase.user }}:{{ .Values.metadataDatabase.password }}@{{ .Values.metadataDatabase.address }}:{{ .Values.metadataDatabase.port }}"
             - name: HASURA_GRAPHQL_ADMIN_SECRET
-              value: {{ .Values.hasura.adminSecret }}
+              value: {{ .Values.hasura.adminSecret | quote }}
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
-              value: {{ .Values.hasura.enableConsole }}
+              value: {{ .Values.hasura.enableConsole | quote }}
             - name: HASURA_GRAPHQL_DEV_MODE
               value: "false"
           ports:
