@@ -1,0 +1,92 @@
+# More examples of Codefresh YAML can be found at
+# https://codefresh.io/docs/docs/yaml-examples/examples/
+
+version: "1.0"
+# Stages can help you organize your steps in stages
+stages:
+  - "clone"
+  - "pulumiInstall"
+  - "pulumiUp"
+  - "fetchSecrets"
+  - "helmDeploy"
+
+steps:
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "RelationLab/hasura-engine-eks"
+    # CF_BRANCH value is auto set when pipeline is triggered
+    # Learn more at codefresh.io/docs/docs/codefresh-yaml/variables/
+    revision: "${{CF_BRANCH}}"
+    git: "github"
+
+  pulumiInstall:
+    title: "Pulumi Install"
+    image: "node:lts-slim"
+    working_directory: "${{clone}}"
+    commands:
+      - npm install
+
+  pulumiUp:
+    title: "Pulumi Up"
+    image: "pulumi/pulumi"
+    working_directory: "${{clone}}"
+    commands:
+      - pulumi login
+      - pulumi stack select dev
+      # (Optional) Use pulumi stack to get more information in CI/CD logs about the current stack
+      - pulumi stack
+      - pulumi up --non-interactive --yes
+      - cf_export AWS_ECR_REPO_NAME=$(pulumi stack output hasuraEngineRepositoryName)
+      - cf_export AWS_ECR_REPO_URL=$(pulumi stack output hasuraEngineRepositoryUrl)
+      - cf_export AWS_SECRET_ID=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export DATABASE_NAME=$(pulumi stack output hasuraEngineDatabaseName)
+      - cf_export DATABASE_ADDRESS=$(pulumi stack output hasuraEngineDatabaseAddress)
+      - cf_export METADATA_DATABASE_NAME=$(pulumi stack output hasuraMetadataDatabaseName)
+      - cf_export METADATA_DATABASE_ADDRESS=$(pulumi stack output hasuraMetadataDatabaseAddress)
+
+  build:
+    title: "Building Docker image"
+    type: "build"
+    image_name: "${{AWS_ECR_REPO_NAME}}"
+    working_directory: "${{clone}}/app"
+    dockerfile: "Dockerfile"
+    tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+
+  fetchSecrets:
+    title: "Fetch AWS Secrets"
+    type: aws-secrets-manager
+    arguments:
+      AWS_DEFAULT_REGION: "${{AWS_DEFAULT_REGION}}"
+      AWS_ACCESS_KEY_ID: "${{AWS_ACCESS_KEY_ID}}"
+      AWS_SECRET_ACCESS_KEY: "${{AWS_SECRET_ACCESS_KEY}}"
+      secrets:
+        - secret_arn: "${{AWS_SECRET_ID}}"
+          key: "dbPassword"
+          store_in: DATABASE_PASSWORD
+        - secret_arn: "${{AWS_SECRET_ID}}"
+          key: "metadataDbPassword"
+          store_in: METADATA_DATABASE_PASSWORD
+        - secret_arn: "${{AWS_SECRET_ID}}"
+          key: "hasuraAdminSecret"
+          store_in: HASURA_ADMIN_SECRET
+
+  helmDeploy:
+    title: "Deploy helm to AWS EKS"
+    type: helm
+    working_directory: "${{clone}}"
+    arguments:
+      chart_name: helm
+      release_name: hasura-engine
+      helm_version: 3.6.1
+      kube_context: relation-eks-dev
+      custom_values:
+        - "image_repository=${{AWS_ECR_REPO_URL}}"
+        - "image_tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
+        - "hasura_adminSecret=${{HASURA_ADMIN_SECRET}}"
+        - "database_dbName=${{DATABASE_NAME}}"
+        - "database_address=${{DATABASE_ADDRESS}}"
+        - "database_password=${{DATABASE_PASSWORD}}"
+        - "metadataDatabase_dbName=${{METADATA_DATABASE_NAME}}"
+        - "metadataDatabase_address=${{METADATA_DATABASE_ADDRESS}}"
+        - "metadataDatabase_password=${{METADATA_DATABASE_PASSWORD}}"
