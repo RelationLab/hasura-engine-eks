@@ -1,11 +1,7 @@
 import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
-import {baseTags, baseConfig} from "./base";
+import {baseTags, baseConfig, networkingStack} from "./base";
 
-const stack = pulumi.getStack();
-const networkingStackName = `${baseConfig.maintainer}/relation-networking/${stack}`;
-const networkingStack = new pulumi.StackReference(networkingStackName);
 const dataVpcSubnetIds = networkingStack.getOutput("dataVpcPrivateSubnetIds");
 
 const subnetGroup = new aws.rds.SubnetGroup(baseTags.Name, {
@@ -33,28 +29,8 @@ const enhancedMonitoringRole = new aws.iam.Role(baseTags.Name, {
     tags: baseTags,
 });
 
-export const hasuraEngineRds = new aws.rds.Instance(baseTags.Name, {
-    engine: "postgres",
-    engineVersion: "14.1",
-    allocatedStorage: 500,
-    instanceClass: "db.t4g.xlarge",
-    backupRetentionPeriod: 7,
-    backupWindow: "00:00-01:00",
-    maintenanceWindow: "Mon:02:00-Mon:04:00",
-    monitoringRoleArn: enhancedMonitoringRole.arn,
-    monitoringInterval: 15,
-    username: "postgres",
-    password: baseConfig.dbPassword,
-    dbName: baseConfig.dbName,
-    finalSnapshotIdentifier,
-    storageType: "gp2",
-    skipFinalSnapshot: false,
-    dbSubnetGroupName: subnetGroup.name,
-    vpcSecurityGroupIds: [networkingStack.getOutput("peeredSecurityGroupId")],
-    tags: baseTags,
-});
-
 export const hasuraMetadataRds = new aws.rds.Instance(`${baseTags.Name}-metadata`, {
+    tags: baseTags,
     engine: "postgres",
     engineVersion: "14.1",
     allocatedStorage: 5,
@@ -72,5 +48,4 @@ export const hasuraMetadataRds = new aws.rds.Instance(`${baseTags.Name}-metadata
     skipFinalSnapshot: false,
     dbSubnetGroupName: subnetGroup.name,
     vpcSecurityGroupIds: [networkingStack.getOutput("peeredSecurityGroupId")],
-    tags: baseTags,
-});
+}, {ignoreChanges: ["monitoringInterval"]});

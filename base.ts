@@ -1,17 +1,16 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+const stack = pulumi.getStack();
 const config = new pulumi.Config();
 
 const dbName = config.get("dbName") || "relation";
 const maintainer = config.require("maintainer");
-const dbPassword = config.requireSecret("dbPassword");
 const hasuraAdminSecret = config.getSecret("hasuraAdminSecret");
 const metadataDbPassword = config.requireSecret("metadataDbPassword");
 
 export const baseConfig = {
     dbName,
-    dbPassword,
     metadataDbPassword,
     maintainer,
 };
@@ -24,12 +23,11 @@ export const baseTags = {
 
 const secret = new aws.secretsmanager.Secret("hasura-engine");
 
-pulumi.all([dbPassword, metadataDbPassword, hasuraAdminSecret]).apply(([dbPassword, metadataDbPassword, hasuraAdminSecret]) => {
+pulumi.all([metadataDbPassword, hasuraAdminSecret]).apply(([metadataDbPassword, hasuraAdminSecret]) => {
 
     new aws.secretsmanager.SecretVersion("hasura-engine-db-password", {
         secretId: secret.id,
         secretString: JSON.stringify({
-            "dbPassword": dbPassword,
             "metadataDbPassword": metadataDbPassword,
             "hasuraAdminSecret": hasuraAdminSecret || "",
         }),
@@ -37,3 +35,5 @@ pulumi.all([dbPassword, metadataDbPassword, hasuraAdminSecret]).apply(([dbPasswo
 });
 
 export const secretId = secret.id;
+export const networkingStack = new pulumi.StackReference(`${maintainer}/relation-networking/${stack}`);
+export const dataSyncStack = new pulumi.StackReference(`${maintainer}/relation-data-sync/${stack}`);
