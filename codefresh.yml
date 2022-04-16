@@ -78,6 +78,8 @@ steps:
       chart_name: helm
       release_name: hasura-engine
       helm_version: 3.6.1
+      cmd_ps: --create-namespace
+      namespace: relation
       kube_context: relation-eks-dev
       custom_values:
         - "image_repository=${{AWS_ECR_REPO_URL}}"
