@@ -1,1 +1,2 @@
 - "!include public_address_label.yaml"
+- "!include public_address_with_labels_source_all.yaml"

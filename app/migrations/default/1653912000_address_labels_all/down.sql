@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS address_with_labels_source_all;
