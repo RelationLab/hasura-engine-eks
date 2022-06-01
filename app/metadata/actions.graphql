@@ -1,0 +1,19 @@
+enum SearchMode {
+  FUZZY
+  PRECISION
+}
+
+type AddressLabelActionResult {
+  address: String!
+  labels: [String!]
+  contents: [String!]
+}
+
+type Query {
+  address_label_action(
+    base_address: String
+    labels: [String!]
+    mode: SearchMode
+    limit: Int
+  ): [AddressLabelActionResult]
+}
