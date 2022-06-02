@@ -5,8 +5,7 @@ actions:
     handler: http://ugc:10002/ugc/public/v1/address/labels
     forward_client_headers: true
 custom_types:
-  enums:
-    - name: SearchMode
+  enums: []
   objects:
     - name: AddressLabelActionResult
   scalars: []

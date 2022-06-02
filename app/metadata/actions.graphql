@@ -1,8 +1,3 @@
-enum SearchMode {
-  FUZZY
-  PRECISION
-}
-
 type AddressLabelActionResult {
   address: String!
   labels: [String!]
@@ -13,7 +8,7 @@ type Query {
   address_label_action(
     base_address: String
     labels: [String!]
-    mode: SearchMode
+    mode: String!
     limit: Int
   ): [AddressLabelActionResult]
 }
