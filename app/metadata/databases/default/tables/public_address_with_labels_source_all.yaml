@@ -1,4 +1,0 @@
-table:
-  schema: public
-  name: address_with_labels_source_all
-

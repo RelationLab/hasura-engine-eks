@@ -1,11 +1,16 @@
 actions:
-- name: address_label_action
+- name: labels_query_addresses_action
   definition:
     kind: synchronous
     handler: http://ugc:10002/ugc/public/v1/address/labels
     forward_client_headers: true
+- name: address_query_labels_action
+  definition:
+    kind: synchronous
+    handler: http://ugc:10002/ugc/public/v1/address/label
+    forward_client_headers: true
 custom_types:
   enums: []
   objects:
-    - name: AddressLabelActionResult
+    - name: AddressWithLabelsResult
   scalars: []

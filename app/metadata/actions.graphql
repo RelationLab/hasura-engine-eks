@@ -1,14 +1,20 @@
-type AddressLabelActionResult {
+type AddressWithLabelsResult {
   address: String!
   labels: [String!]
   contents: [String!]
+  user_name: String
+  user_introduction: String
 }
 
 type Query {
-  address_label_action(
+  labels_query_addresses_action(
     base_address: String
     labels: [String!]
     mode: String!
     limit: Int
-  ): [AddressLabelActionResult]
+  ): [AddressWithLabelsResult]
+}
+
+type Query {
+  address_query_labels_action(address: String!): [AddressWithLabelsResult]
 }
