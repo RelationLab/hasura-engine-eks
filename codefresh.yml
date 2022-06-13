@@ -5,7 +5,6 @@ version: "1.0"
 # Stages can help you organize your steps in stages
 stages:
   - "clone"
-  - "pulumiInstall"
   - "pulumiUp"
   - "fetchSecrets"
   - "helmDeploy"
@@ -20,18 +19,12 @@ steps:
     revision: "${{CF_BRANCH}}"
     git: "github"
 
-  pulumiInstall:
-    title: "Pulumi Install"
-    image: "node:lts-slim"
-    working_directory: "${{clone}}"
-    commands:
-      - npm install
-
   pulumiUp:
     title: "Pulumi Up"
     image: "pulumi/pulumi"
     working_directory: "${{clone}}"
     commands:
+      - npm install
       - pulumi login
       - pulumi stack select dev
       # (Optional) Use pulumi stack to get more information in CI/CD logs about the current stack
