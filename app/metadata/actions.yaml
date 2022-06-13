@@ -9,8 +9,25 @@ actions:
     kind: synchronous
     handler: http://ugc:10002/ugc/public/v1/address/label
     forward_client_headers: true
+- name: dictionary_describe_action
+  definition:
+    kind: synchronous
+    handler: http://ugc:10002/ugc/public/v1/dictionary/describe
+    forward_client_headers: true
+- name: dictionary_describe_label_name_action
+  definition:
+    kind: synchronous
+    handler: http://ugc:10002/ugc/public/v1/dictionary/describe-by-labelname
+    forward_client_headers: true
+- name: labels_count_action
+  definition:
+    kind: synchronous
+    handler: http://ugc:10002/ugc/public/v1/address/labels/count
+    forward_client_headers: true
 custom_types:
   enums: []
   objects:
     - name: AddressWithLabelsResult
+    - name: DictionaryDescribeActionResult
+    - name: LabelsCountActionResult
   scalars: []

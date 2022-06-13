@@ -1,4 +1,5 @@
 type AddressWithLabelsResult {
+  id: Int!
   address: String!
   labels: [String!]
   contents: [String!]
@@ -8,7 +9,7 @@ type AddressWithLabelsResult {
 
 type Query {
   labels_query_addresses_action(
-    base_address: String
+    base_id: Int
     labels: [String!]
     mode: String!
     limit: Int
@@ -17,4 +18,32 @@ type Query {
 
 type Query {
   address_query_labels_action(address: String!): [AddressWithLabelsResult]
+}
+
+type DictionaryDescribeActionResult {
+  chineseDescribe: String
+  englishDescribe: String
+}
+
+type Query {
+  dictionary_describe_action(
+    assetId: Int!
+    dictId: Int!
+    projectId: Int
+    tradeTypeId: Int
+  ): DictionaryDescribeActionResult
+}
+
+type Query {
+  dictionary_describe_label_name_action(
+    labelName: String!
+  ): DictionaryDescribeActionResult
+}
+
+type LabelsCountActionResult {
+  count: Int!
+}
+
+type Query {
+  labels_count_action(labels: [String!], mode: String!): LabelsCountActionResult
 }
