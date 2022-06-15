@@ -27,6 +27,7 @@ actions:
 custom_types:
   enums: []
   objects:
+    - name: LabelsResult
     - name: AddressWithLabelsResult
     - name: DictionaryDescribeActionResult
     - name: LabelsCountActionResult

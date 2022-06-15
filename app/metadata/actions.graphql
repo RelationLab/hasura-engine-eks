@@ -1,8 +1,13 @@
+type LabelsResult {
+  name: String!
+  content: String!
+  source: String!
+}
+
 type AddressWithLabelsResult {
   id: Int!
   address: String!
-  labels: [String!]
-  contents: [String!]
+  labels: LabelsResult!
   user_name: String
   user_introduction: String
 }
