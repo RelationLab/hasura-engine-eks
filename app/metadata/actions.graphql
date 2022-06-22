@@ -28,6 +28,9 @@ type Query {
 type DictionaryDescribeActionResult {
   chineseDescribe: String
   englishDescribe: String
+  hasCollect: Int
+  collectionCount: Int
+  labelId: Int
 }
 
 type Query {
