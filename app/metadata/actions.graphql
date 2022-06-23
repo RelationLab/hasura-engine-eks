@@ -32,6 +32,7 @@ type Query {
 
 type LabelPopularActionResult {
   dataList: LabelPopularItemActionResult!
+  total: Int
 }
 
 type LabelPopularItemActionResult {
@@ -40,6 +41,7 @@ type LabelPopularItemActionResult {
   type: String
   name: String
   source: String
+  content: String
 }
 
 type DictionaryDescribeActionResult {
