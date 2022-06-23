@@ -43,11 +43,11 @@ type LabelPopularItemActionResult {
 }
 
 type DictionaryDescribeActionResult {
-  chineseDescribe: String
   englishDescribe: String
   hasCollect: Int
   collectionCount: Int
   labelId: Int
+  source: String
 }
 
 type Query {
