@@ -10,6 +10,7 @@ type AddressWithLabelsResult {
   labels: LabelsResult!
   user_name: String
   user_introduction: String
+  hasCollect: Int
 }
 
 type Query {
