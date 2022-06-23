@@ -24,6 +24,11 @@ actions:
     kind: synchronous
     handler: http://ugc:10002/ugc/public/v1/address/labels/count
     forward_client_headers: true
+- name: label_popular_action
+  definition:
+    kind: synchronous
+    handler: http://ugc:10002/ugc/public/v1/labels/popular
+    forward_client_headers: true
 custom_types:
   enums: []
   objects:
@@ -31,4 +36,6 @@ custom_types:
     - name: AddressWithLabelsResult
     - name: DictionaryDescribeActionResult
     - name: LabelsCountActionResult
+    - name: LabelPopularActionResult
+    - name: LabelPopularItemActionResult
   scalars: []

@@ -26,6 +26,22 @@ type Query {
   address_query_labels_action(address: String!): [AddressWithLabelsResult]
 }
 
+type Query {
+  label_popular_action: LabelPopularActionResult
+}
+
+type LabelPopularActionResult {
+  dataList: LabelPopularItemActionResult!
+}
+
+type LabelPopularItemActionResult {
+  id: Int
+  owner: String
+  type: String
+  name: String
+  source: String
+}
+
 type DictionaryDescribeActionResult {
   chineseDescribe: String
   englishDescribe: String
