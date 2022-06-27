@@ -1,1 +1,3 @@
 - "!include public_address_label.yaml"
+- "!include public_combination.yaml"
+- "!include public_label_factor_seting.yaml"

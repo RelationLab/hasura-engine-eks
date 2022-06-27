@@ -1,0 +1,3 @@
+table:
+  schema: public
+  name: label_factor_seting
