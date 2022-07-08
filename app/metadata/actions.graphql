@@ -50,6 +50,8 @@ type DictionaryDescribeActionResult {
   collectionCount: Int
   labelId: Int
   source: String
+  userName: String
+  userDescribe: String
 }
 
 type Query {
