@@ -52,6 +52,7 @@ type DictionaryDescribeActionResult {
   source: String
   userName: String
   userDescribe: String
+  refreshTime: Int
 }
 
 type Query {
