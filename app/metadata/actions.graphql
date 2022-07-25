@@ -4,9 +4,14 @@ type LabelsResult {
   source: String!
 }
 
+type AddressResult {
+  value: String!
+  is_contract: Boolean!
+}
+
 type AddressWithLabelsResult {
   id: Int!
-  address: String!
+  address: AddressResult!
   labels: LabelsResult!
   user_name: String
   user_introduction: String

@@ -1,44 +1,45 @@
 actions:
-- name: labels_query_addresses_action
-  definition:
-    kind: synchronous
-    handler: http://ugc-backend:10002/ugc/public/v1/address/labels
-    forward_client_headers: true
-    timeout: 300
-- name: address_query_labels_action
-  definition:
-    kind: synchronous
-    handler: http://ugc-backend:10002/ugc/public/v1/address/label
-    forward_client_headers: true
-    timeout: 300
-- name: dictionary_describe_action
-  definition:
-    kind: synchronous
-    handler: http://ugc-backend:10002/ugc/public/v1/dictionary/describe
-    forward_client_headers: true
-    timeout: 300
-- name: dictionary_describe_label_name_action
-  definition:
-    kind: synchronous
-    handler: http://ugc-backend:10002/ugc/public/v1/dictionary/describe-by-labelname
-    forward_client_headers: true
-    timeout: 300
-- name: labels_count_action
-  definition:
-    kind: synchronous
-    handler: http://ugc-backend:10002/ugc/public/v1/address/labels/count
-    forward_client_headers: true
-    timeout: 300
-- name: label_popular_action
-  definition:
-    kind: synchronous
-    handler: http://ugc-backend:10002/ugc/public/v1/labels/popular
-    forward_client_headers: true
-    timeout: 300
+  - name: labels_query_addresses_action
+    definition:
+      kind: synchronous
+      handler: http://ugc-backend:10002/ugc/public/v1/address/labels
+      forward_client_headers: true
+      timeout: 300
+  - name: address_query_labels_action
+    definition:
+      kind: synchronous
+      handler: http://ugc-backend:10002/ugc/public/v1/address/label
+      forward_client_headers: true
+      timeout: 300
+  - name: dictionary_describe_action
+    definition:
+      kind: synchronous
+      handler: http://ugc-backend:10002/ugc/public/v1/dictionary/describe
+      forward_client_headers: true
+      timeout: 300
+  - name: dictionary_describe_label_name_action
+    definition:
+      kind: synchronous
+      handler: http://ugc-backend:10002/ugc/public/v1/dictionary/describe-by-labelname
+      forward_client_headers: true
+      timeout: 300
+  - name: labels_count_action
+    definition:
+      kind: synchronous
+      handler: http://ugc-backend:10002/ugc/public/v1/address/labels/count
+      forward_client_headers: true
+      timeout: 300
+  - name: label_popular_action
+    definition:
+      kind: synchronous
+      handler: http://ugc-backend:10002/ugc/public/v1/labels/popular
+      forward_client_headers: true
+      timeout: 300
 custom_types:
   enums: []
   objects:
     - name: LabelsResult
+    - name: AddressResult
     - name: AddressWithLabelsResult
     - name: DictionaryDescribeActionResult
     - name: LabelsCountActionResult
