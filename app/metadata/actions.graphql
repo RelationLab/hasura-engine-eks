@@ -20,7 +20,7 @@ type AddressWithLabelsResult {
 
 type Query {
   labels_query_addresses_action(
-    base_id: Int
+    base_id: Int!
     labels: [String!]
     mode: String!
     limit: Int
