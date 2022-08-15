@@ -35,6 +35,18 @@ actions:
       handler: http://ugc-backend:10002/ugc/public/v1/labels/popular
       forward_client_headers: true
       timeout: 300
+  - name: query_by_address_action
+    definition:
+      kind: synchronous
+      handler: http://labels-bff:3000/api/hasura/action
+      forward_client_headers: true
+      timeout: 300
+  - name: query_by_labels_action
+    definition:
+      kind: synchronous
+      handler: http://labels-bff:3000/api/hasura/action
+      forward_client_headers: true
+      timeout: 300
   - name: friends_action
     definition:
       kind: synchronous

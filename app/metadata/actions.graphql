@@ -7,6 +7,7 @@ type LabelsResult {
 type AddressResult {
   value: String!
   is_contract: Boolean!
+  friend_status: Int
 }
 
 type AddressWithLabelsResult {
@@ -125,4 +126,21 @@ type FriendsRequestRecord {
   name: String
   introduction: String
   updated_at: String
+}
+
+type Query {
+  query_by_address_action(
+    from: String!
+    address: String!
+  ): [AddressWithLabelsResult]
+}
+
+type Query {
+  query_by_labels_action(
+    from: String!
+    base_id: Int
+    labels: [String!]
+    mode: String!
+    limit: Int
+  ): [AddressWithLabelsResult]
 }
