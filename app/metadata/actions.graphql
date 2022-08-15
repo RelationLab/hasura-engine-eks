@@ -102,7 +102,7 @@ type FriendsRecord {
   name: String
   labels: [String]
   address: String
-  introdution: String
+  introduction: String
   created_at: String
 }
 
