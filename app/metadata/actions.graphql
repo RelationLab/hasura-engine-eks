@@ -7,7 +7,13 @@ type LabelsResult {
 type AddressResult {
   value: String!
   is_contract: Boolean!
-  friend_status: Int
+  friend_request: FriendRequestResult
+}
+
+type FriendRequestResult {
+  from: String!
+  to: String!
+  status: Int!
 }
 
 type AddressWithLabelsResult {

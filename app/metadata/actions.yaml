@@ -73,4 +73,5 @@ custom_types:
     - name: FriendsRecord
     - name: FriendsRequestOutput
     - name: FriendsRequestRecord
+    - name: FriendRequestResult
   scalars: []
