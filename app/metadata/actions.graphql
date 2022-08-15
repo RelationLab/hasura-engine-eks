@@ -82,3 +82,47 @@ type LabelsCountActionResult {
 type Query {
   labels_count_action(labels: [String!], mode: String!): LabelsCountActionResult
 }
+
+type Query {
+  friends_action(
+    from: String!
+    keyword: String
+    limit: Int
+    offset: Int
+  ): FriendsOutput
+}
+
+type FriendsOutput {
+  count: Int!
+  results: [FriendsRecord]
+}
+
+type FriendsRecord {
+  name: String
+  labels: [String]
+  address: String
+  introdution: String
+  created_at: String
+}
+
+type Query {
+  friends_request_action(
+    to: String!
+    status: [Int]
+    limit: Int
+    offset: Int
+  ): FriendsRequestOutput
+}
+
+type FriendsRequestOutput {
+  count: Int!
+  results: [FriendsRequestRecord]
+}
+
+type FriendsRequestRecord {
+  from: String!
+  status: Int!
+  name: String
+  introduction: String
+  updated_at: String
+}

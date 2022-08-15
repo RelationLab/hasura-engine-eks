@@ -35,6 +35,18 @@ actions:
       handler: http://ugc-backend:10002/ugc/public/v1/labels/popular
       forward_client_headers: true
       timeout: 300
+  - name: friends_action
+    definition:
+      kind: synchronous
+      handler: http://relation-service:3000/api/hasura/action
+      forward_client_headers: true
+      timeout: 300
+  - name: friends_request_action
+    definition:
+      kind: synchronous
+      handler: http://relation-service:3000/api/hasura/action
+      forward_client_headers: true
+      timeout: 300
 custom_types:
   enums: []
   objects:
@@ -45,4 +57,8 @@ custom_types:
     - name: LabelsCountActionResult
     - name: LabelPopularActionResult
     - name: LabelPopularItemActionResult
+    - name: FriendsOutput
+    - name: FriendsRecord
+    - name: FriendsRequestOutput
+    - name: FriendsRequestRecord
   scalars: []
