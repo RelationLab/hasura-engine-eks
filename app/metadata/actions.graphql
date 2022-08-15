@@ -125,7 +125,7 @@ type FriendsRequestRecord {
   to: String!
   status: Int!
   name: String
-  introducation: String
+  introduction: String
   updated_at: String
 }
 
