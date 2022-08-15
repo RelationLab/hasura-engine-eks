@@ -9,9 +9,8 @@ export const hasuraEngineRepositoryName = ecrRepository.name;
 export const hasuraEngineRepositoryUrl = ecrRepository.repositoryUrl;
 
 export const dataSyncDatabaseName = dataSyncStack.getOutput("rdsDatabaseName");
-export const dataSyncDatabaseAddress = dataSyncStack.getOutput(
-  "rdsReplicationDatabaseAddress"
-);
+export const dataSyncDatabaseAddress =
+  dataSyncStack.getOutput("rdsDatabaseAddress");
 
 export const hasuraMetadataDatabaseName = hasuraMetadataRds.dbName;
 export const hasuraMetadataDatabaseAddress = hasuraMetadataRds.address;
