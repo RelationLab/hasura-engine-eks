@@ -137,14 +137,14 @@ type FriendsRequestRecord {
 
 type Query {
   query_by_address_action(
-    from: String!
+    from: String
     address: String!
   ): [AddressWithLabelsResult]
 }
 
 type Query {
   query_by_labels_action(
-    from: String!
+    from: String
     base_id: Int
     labels: [String!]
     mode: String!
