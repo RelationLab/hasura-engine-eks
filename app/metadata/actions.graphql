@@ -114,7 +114,8 @@ type FriendsRecord {
 
 type Query {
   friends_request_action(
-    address: String!
+    from: String
+    to: String
     status: [Int]
     limit: Int
     offset: Int
