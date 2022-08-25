@@ -116,6 +116,7 @@ type Query {
   friends_request_action(
     from: String
     to: String
+    address: String
     status: [Int]
     limit: Int
     offset: Int
