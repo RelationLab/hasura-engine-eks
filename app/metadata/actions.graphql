@@ -65,6 +65,8 @@ type DictionaryDescribeActionResult {
   userName: String
   userDescribe: String
   refreshTime: Int
+  arTxHash: String
+  arStatus: String
 }
 
 type Query {
