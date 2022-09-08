@@ -59,6 +59,12 @@ actions:
       handler: http://relation-service:3000/api/hasura/action
       forward_client_headers: true
       timeout: 300
+  - name: friends_request_count_action
+    definition:
+      kind: synchronous
+      handler: http://relation-service:3000/api/hasura/action
+      forward_client_headers: true
+      timeout: 300
 custom_types:
   enums: []
   objects:
@@ -73,5 +79,6 @@ custom_types:
     - name: FriendsRecord
     - name: FriendsRequestOutput
     - name: FriendsRequestRecord
+    - name: FriendsRequestCountOutput
     - name: FriendRequestResult
   scalars: []

@@ -130,6 +130,17 @@ type FriendsRequestOutput {
   results: [FriendsRequestRecord]
 }
 
+type Query {
+  friends_request_count_action(
+    from: String!
+    updated_at: String!
+  ): FriendsRequestCountOutput
+}
+
+type FriendsRequestCountOutput {
+  count: Int!
+}
+
 type FriendsRequestRecord {
   from: String!
   to: String!
