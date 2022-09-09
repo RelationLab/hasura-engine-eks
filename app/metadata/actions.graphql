@@ -133,6 +133,7 @@ type FriendsRequestOutput {
 type Query {
   friends_request_count_action(
     from: String!
+    status: [Int]
     updated_at: String!
   ): FriendsRequestCountOutput
 }
