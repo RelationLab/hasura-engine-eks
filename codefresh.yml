@@ -5,9 +5,10 @@ version: "1.0"
 # Stages can help you organize your steps in stages
 stages:
   - "clone"
-  - "pulumiUp"
-  - "fetchSecrets"
-  - "helmDeploy"
+  - "pulumiOutput"
+  - "buildArtifacts"
+  - "devDeploy"
+  - "prodDeploy"
 
 steps:
   clone:
@@ -19,68 +20,103 @@ steps:
     revision: "${{CF_BRANCH}}"
     git: "github"
 
-  pulumiUp:
-    title: "Pulumi Up"
+  pulumiOutput:
+    title: "Pulumi Output"
     image: "pulumi/pulumi"
     working_directory: "${{clone}}"
     commands:
       - npm install
       - pulumi login
       - pulumi stack select dev
-      # (Optional) Use pulumi stack to get more information in CI/CD logs about the current stack
-      - pulumi stack
-      - pulumi up --non-interactive --yes
       - cf_export AWS_ECR_REPO_NAME=$(pulumi stack output hasuraEngineRepositoryName)
       - cf_export AWS_ECR_REPO_URL=$(pulumi stack output hasuraEngineRepositoryUrl)
-      - cf_export AWS_HASURA_ENGINE_SECRET_ID=$(pulumi stack output hasuraEngineSecretId)
       - cf_export AWS_DATA_SYNC_SECRET_ID=$(pulumi stack output dataSyncSecretId)
       - cf_export DATA_SYNC_DATABASE_NAME=$(pulumi stack output dataSyncDatabaseName)
       - cf_export DATA_SYNC_DATABASE_ADDRESS=$(pulumi stack output dataSyncDatabaseAddress)
-      - cf_export HASURA_METADATA_DATABASE_NAME=$(pulumi stack output hasuraMetadataDatabaseName)
-      - cf_export HASURA_METADATA_DATABASE_ADDRESS=$(pulumi stack output hasuraMetadataDatabaseAddress)
+      - cf_export AWS_SECRET_ID_DEV=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export HASURA_METADATA_DATABASE_NAME_DEV=$(pulumi stack output hasuraMetadataDatabaseName)
+      - cf_export HASURA_METADATA_DATABASE_ADDRESS_DEV=$(pulumi stack output hasuraMetadataDatabaseAddress)
+      - pulumi stack select prod
+      - cf_export AWS_SECRET_ID_PROD=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export HASURA_METADATA_DATABASE_NAME_PROD=$(pulumi stack output hasuraMetadataDatabaseName)
+      - cf_export HASURA_METADATA_DATABASE_ADDRESS_PROD=$(pulumi stack output hasuraMetadataDatabaseAddress)
 
-  build:
-    title: "Building Docker image"
-    type: "build"
-    image_name: "${{AWS_ECR_REPO_NAME}}"
-    working_directory: "${{clone}}/app"
-    dockerfile: "Dockerfile"
-    tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+  buildArtifacts:
+    type: "parallel"
+    steps:
+      buildImage:
+        title: "Building Hasura Engine Docker image"
+        type: "build"
+        image_name: "${{AWS_ECR_REPO_NAME}}"
+        working_directory: "${{clone}}/app"
+        dockerfile: "Dockerfile"
+        tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+      fetchSecrets:
+        title: "Fetch AWS Secrets"
+        type: aws-secrets-manager
+        arguments:
+          AWS_DEFAULT_REGION: "${{AWS_DEFAULT_REGION}}"
+          secrets:
+            - secret_arn: "${{AWS_DATA_SYNC_SECRET_ID}}"
+              key: "dbPassword"
+              store_in: DATA_SYNC_DATABASE_PASSWORD
+            - secret_arn: "${{AWS_SECRET_ID_DEV}}"
+              key: "hasuraAdminSecret"
+              store_in: HASURA_ADMIN_SECRET_DEV
+            - secret_arn: "${{AWS_SECRET_ID_DEV}}"
+              key: "metadataDbPassword"
+              store_in: HASURA_METADATA_DATABASE_PASSWORD_DEV
+            - secret_arn: "${{AWS_SECRET_ID_PROD}}"
+              key: "hasuraAdminSecret"
+              store_in: HASURA_ADMIN_SECRET_PROD
+            - secret_arn: "${{AWS_SECRET_ID_PROD}}"
+              key: "metadataDbPassword"
+              store_in: HASURA_METADATA_DATABASE_PASSWORD_PROD
 
-  fetchSecrets:
-    title: "Fetch AWS Secrets"
-    type: aws-secrets-manager
-    arguments:
-      AWS_DEFAULT_REGION: "${{AWS_DEFAULT_REGION}}"
-      secrets:
-        - secret_arn: "${{AWS_DATA_SYNC_SECRET_ID}}"
-          key: "dbPassword"
-          store_in: DATA_SYNC_DATABASE_PASSWORD
-        - secret_arn: "${{AWS_HASURA_ENGINE_SECRET_ID}}"
-          key: "metadataDbPassword"
-          store_in: HASURA_METADATA_DATABASE_PASSWORD
-        - secret_arn: "${{AWS_HASURA_ENGINE_SECRET_ID}}"
-          key: "hasuraAdminSecret"
-          store_in: HASURA_ADMIN_SECRET
-
-  helmDeploy:
-    title: "Deploy helm to AWS EKS"
+  devDeploy:
+    title: "Deploy to AWS EKS development env"
     type: helm
     working_directory: "${{clone}}"
     arguments:
       chart_name: helm
       release_name: hasura-engine
       helm_version: 3.6.1
-      cmd_ps: --create-namespace
-      namespace: relation
-      kube_context: relation-eks-dev
+      namespace: development
+      kube_context: wired-prod
       custom_values:
         - "image_repository=${{AWS_ECR_REPO_URL}}"
         - "image_tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
-        - "hasura_adminSecret=${{HASURA_ADMIN_SECRET}}"
         - "database_dbName=${{DATA_SYNC_DATABASE_NAME}}"
         - "database_address=${{DATA_SYNC_DATABASE_ADDRESS}}"
         - "database_password=${{DATA_SYNC_DATABASE_PASSWORD}}"
-        - "metadataDatabase_dbName=${{HASURA_METADATA_DATABASE_NAME}}"
-        - "metadataDatabase_address=${{HASURA_METADATA_DATABASE_ADDRESS}}"
-        - "metadataDatabase_password=${{HASURA_METADATA_DATABASE_PASSWORD}}"
+        - "hasura_adminSecret=${{HASURA_ADMIN_SECRET_DEV}}"
+        - "metadataDatabase_dbName=${{HASURA_METADATA_DATABASE_NAME_DEV}}"
+        - "metadataDatabase_address=${{HASURA_METADATA_DATABASE_ADDRESS_DEV}}"
+        - "metadataDatabase_password=${{HASURA_METADATA_DATABASE_PASSWORD_DEV}}"
+
+  askForPermission:
+    type: pending-approval
+    stage: prodDeploy
+    title: Deploy to production?
+
+  prodDeploy:
+    title: "Deploy to AWS EKS development env"
+    stage: prodDeploy
+    type: helm
+    working_directory: "${{clone}}"
+    arguments:
+      chart_name: helm
+      release_name: hasura-engine
+      helm_version: 3.6.1
+      namespace: production
+      kube_context: wired-prod
+      custom_values:
+        - "image_repository=${{AWS_ECR_REPO_URL}}"
+        - "image_tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
+        - "database_dbName=${{DATA_SYNC_DATABASE_NAME}}"
+        - "database_address=${{DATA_SYNC_DATABASE_ADDRESS}}"
+        - "database_password=${{DATA_SYNC_DATABASE_PASSWORD}}"
+        - "hasura_adminSecret=${{HASURA_ADMIN_SECRET_PROD}}"
+        - "metadataDatabase_dbName=${{HASURA_METADATA_DATABASE_NAME_PROD}}"
+        - "metadataDatabase_address=${{HASURA_METADATA_DATABASE_ADDRESS_PROD}}"
+        - "metadataDatabase_password=${{HASURA_METADATA_DATABASE_PASSWORD_PROD}}"
