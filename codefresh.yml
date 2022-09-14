@@ -100,7 +100,7 @@ steps:
     title: Deploy to production?
 
   prodDeploy:
-    title: "Deploy to AWS EKS development env"
+    title: "Deploy to AWS EKS production env"
     stage: prodDeploy
     type: helm
     working_directory: "${{clone}}"
