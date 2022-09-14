@@ -1,51 +1,74 @@
 import * as aws from "@pulumi/aws";
-import {baseTags} from "./base";
+import { baseConfig, baseTags } from "./base";
 
-export const ecrRepository = new aws.ecr.Repository(baseTags.Name, {tags: baseTags});
+let ecr;
 
-const repositoryPolicy = new aws.ecr.RepositoryPolicy(baseTags.Name, {
-    repository: ecrRepository.id,
-    policy: JSON.stringify({
+if (baseConfig.stack == "prod") {
+  ecr = new aws.ecr.Repository(baseTags.BaseName, {
+    name: baseTags.BaseName,
+    tags: baseTags,
+  });
+
+  new aws.ecr.RepositoryPolicy(
+    baseTags.Name,
+    {
+      repository: ecr.id,
+      policy: JSON.stringify({
         Version: "2012-10-17",
-        Statement: [{
+        Statement: [
+          {
             Sid: "new policy",
             Effect: "Allow",
             Principal: "*",
             Action: [
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:PutImage",
-                "ecr:InitiateLayerUpload",
-                "ecr:UploadLayerPart",
-                "ecr:CompleteLayerUpload",
-                "ecr:DescribeRepositories",
-                "ecr:GetRepositoryPolicy",
-                "ecr:ListImages",
-                "ecr:DeleteRepository",
-                "ecr:BatchDeleteImage",
-                "ecr:SetRepositoryPolicy",
-                "ecr:DeleteRepositoryPolicy"
-            ]
-        }]
-    }),
-}, {deleteBeforeReplace: true});
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage",
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:PutImage",
+              "ecr:InitiateLayerUpload",
+              "ecr:UploadLayerPart",
+              "ecr:CompleteLayerUpload",
+              "ecr:DescribeRepositories",
+              "ecr:GetRepositoryPolicy",
+              "ecr:ListImages",
+              "ecr:DeleteRepository",
+              "ecr:BatchDeleteImage",
+              "ecr:SetRepositoryPolicy",
+              "ecr:DeleteRepositoryPolicy",
+            ],
+          },
+        ],
+      }),
+    },
+    { deleteBeforeReplace: true }
+  );
 
-const lifecyclePolicy = new aws.ecr.LifecyclePolicy(baseTags.Name, {
-    repository: ecrRepository.id,
-    policy: JSON.stringify({
-        rules: [{
+  new aws.ecr.LifecyclePolicy(
+    baseTags.Name,
+    {
+      repository: ecr.id,
+      policy: JSON.stringify({
+        rules: [
+          {
             rulePriority: 1,
             description: "Expire images older than 14 days",
             selection: {
-                tagStatus: "untagged",
-                countType: "sinceImagePushed",
-                countUnit: "days",
-                countNumber: 14
+              tagStatus: "untagged",
+              countType: "sinceImagePushed",
+              countUnit: "days",
+              countNumber: 14,
             },
             action: {
-                type: "expire"
-            }
-        }]
-    })
-}, {deleteBeforeReplace: true});
+              type: "expire",
+            },
+          },
+        ],
+      }),
+    },
+    { deleteBeforeReplace: true }
+  );
+} else {
+  ecr = aws.ecr.Repository.get(baseTags.BaseName, baseTags.BaseName);
+}
+
+export const ecrRepository = ecr;

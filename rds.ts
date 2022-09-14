@@ -1,38 +1,45 @@
 import * as aws from "@pulumi/aws";
 import * as random from "@pulumi/random";
-import {baseTags, baseConfig, networkingStack} from "./base";
+import { baseTags, baseConfig, networkingStack } from "./base";
 
 const dataVpcSubnetIds = networkingStack.getOutput("dataVpcPrivateSubnetIds");
 
 const subnetGroup = new aws.rds.SubnetGroup(baseTags.Name, {
-    subnetIds: dataVpcSubnetIds,
-    tags: baseTags,
+  subnetIds: dataVpcSubnetIds,
+  tags: baseTags,
 });
 
-const finalSnapshotIdentifier = new random.RandomString("finalSnapshotIdentifierRandom", {
+const finalSnapshotIdentifier = new random.RandomString(
+  "finalSnapshotIdentifierRandom",
+  {
     length: 16,
     special: false,
-}).result;
+  }
+).result;
 
 const enhancedMonitoringRole = new aws.iam.Role(baseTags.Name, {
-    assumeRolePolicy: {
-        Version: "2012-10-17",
-        Statement: [{
-            Action: "sts:AssumeRole",
-            Principal: {
-                Service: "monitoring.rds.amazonaws.com",
-            },
-            Effect: "Allow",
-            Sid: ""
-        }],
-    },
-    tags: baseTags,
+  assumeRolePolicy: {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: "sts:AssumeRole",
+        Principal: {
+          Service: "monitoring.rds.amazonaws.com",
+        },
+        Effect: "Allow",
+        Sid: "",
+      },
+    ],
+  },
+  tags: baseTags,
 });
 
-export const hasuraMetadataRds = new aws.rds.Instance(`${baseTags.Name}-metadata`, {
+export const hasuraMetadataRds = new aws.rds.Instance(
+  `${baseTags.Name}-metadata`,
+  {
     tags: baseTags,
     engine: "postgres",
-    engineVersion: "14.1",
+    engineVersion: "14.3",
     allocatedStorage: 5,
     instanceClass: "db.t3.small",
     backupRetentionPeriod: 7,
@@ -48,4 +55,6 @@ export const hasuraMetadataRds = new aws.rds.Instance(`${baseTags.Name}-metadata
     skipFinalSnapshot: false,
     dbSubnetGroupName: subnetGroup.name,
     vpcSecurityGroupIds: [networkingStack.getOutput("peeredSecurityGroupId")],
-}, {ignoreChanges: ["monitoringInterval"]});
+  },
+  { ignoreChanges: ["monitoringInterval"] }
+);

@@ -1,0 +1,7 @@
+config:
+  aws:region: ap-southeast-1
+  relation-hasura-engine-eks:hasuraAdminSecret:
+    secure: AAABAOba1OBLl3AV1JpajEnCWBCGZWmNWRtrduiAXOZfeP3/4tIayX22ZIMUrreAsVLhlQ==
+  relation-hasura-engine-eks:maintainer: Matrix-Zhang
+  relation-hasura-engine-eks:metadataDbPassword:
+    secure: AAABAOzEH4JG8RmMhGkMwA5WbWZYmizZCMRJSYiZ1J2rhnsDiwDtYN7XXWZgBsjZP7vYCw==
