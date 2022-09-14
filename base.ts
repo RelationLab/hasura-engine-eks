@@ -25,7 +25,7 @@ export const baseTags = {
   PulumiStack: `Pulumi-${stack}`,
 };
 
-const secret = new aws.secretsmanager.Secret(baseName);
+const secret = new aws.secretsmanager.Secret(baseTags.Name);
 
 pulumi
   .all([metadataDbPassword, hasuraAdminSecret])
