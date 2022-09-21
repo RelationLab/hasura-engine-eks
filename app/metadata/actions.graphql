@@ -119,6 +119,7 @@ type Query {
     from: String
     to: String
     address: String
+    filters: [String]
     status: [Int]
     limit: Int
     offset: Int
