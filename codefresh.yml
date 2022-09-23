@@ -74,14 +74,14 @@ steps:
               store_in: HASURA_METADATA_DATABASE_PASSWORD_PROD
 
   devDeploy:
-    title: "Deploy to AWS EKS development env"
+    title: "Deploy to AWS EKS dev env"
     type: helm
     working_directory: "${{clone}}"
     arguments:
       chart_name: helm
       release_name: hasura-engine
       helm_version: 3.6.1
-      namespace: development
+      namespace: dev
       kube_context: wired-eks-prod
       custom_values:
         - "image_repository=${{AWS_ECR_REPO_URL}}"
@@ -100,7 +100,7 @@ steps:
     title: Deploy to production?
 
   prodDeploy:
-    title: "Deploy to AWS EKS production env"
+    title: "Deploy to AWS EKS prod env"
     stage: prodDeploy
     type: helm
     working_directory: "${{clone}}"
@@ -108,7 +108,7 @@ steps:
       chart_name: helm
       release_name: hasura-engine
       helm_version: 3.6.1
-      namespace: production
+      namespace: prod
       kube_context: wired-eks-prod
       custom_values:
         - "image_repository=${{AWS_ECR_REPO_URL}}"
