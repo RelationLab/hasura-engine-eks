@@ -17,6 +17,7 @@ type FriendRequestResult {
 }
 
 type AddressWithLabelsResult {
+    id: Int!
   address: AddressResult!
   labels: LabelsResult!
   user_name: String
