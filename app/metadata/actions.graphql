@@ -17,12 +17,11 @@ type FriendRequestResult {
 }
 
 type AddressWithLabelsResult {
-  id: Int!
   address: AddressResult!
   labels: LabelsResult!
   user_name: String
   user_introduction: String
-  hasCollect: Int
+  user_twitter: String
 }
 
 type Query {
