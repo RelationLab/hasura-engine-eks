@@ -164,7 +164,7 @@ steps:
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_PROD=$(pulumi stack output hasuraMetadataDatabaseAddress)
 
   prodFetchSecrets:
-    title: "Fetch Stag AWS Secrets"
+    title: "Fetch Prod AWS Secrets"
     type: aws-secrets-manager
     stage: prodDeploy
     arguments:
