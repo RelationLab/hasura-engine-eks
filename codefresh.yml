@@ -8,6 +8,7 @@ stages:
   - "pulumiOutput"
   - "buildArtifacts"
   - "devDeploy"
+  - "stagDeploy"
   - "prodDeploy"
 
 steps:
@@ -20,14 +21,16 @@ steps:
     revision: "${{CF_BRANCH}}"
     git: "github"
 
-  pulumiOutput:
+  devPulumiUp:
     title: "Pulumi Output"
     image: "pulumi/pulumi"
+    stage: devDeploy
     working_directory: "${{clone}}"
     commands:
       - npm install
       - pulumi login
       - pulumi stack select dev
+      - pulumi up --non-interactive --yes
       - cf_export AWS_ECR_REPO_NAME=$(pulumi stack output hasuraEngineRepositoryName)
       - cf_export AWS_ECR_REPO_URL=$(pulumi stack output hasuraEngineRepositoryUrl)
       - cf_export AWS_DATA_SYNC_SECRET_ID=$(pulumi stack output dataSyncSecretId)
@@ -36,13 +39,10 @@ steps:
       - cf_export AWS_SECRET_ID_DEV=$(pulumi stack output hasuraEngineSecretId)
       - cf_export HASURA_METADATA_DATABASE_NAME_DEV=$(pulumi stack output hasuraMetadataDatabaseName)
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_DEV=$(pulumi stack output hasuraMetadataDatabaseAddress)
-      - pulumi stack select prod
-      - cf_export AWS_SECRET_ID_PROD=$(pulumi stack output hasuraEngineSecretId)
-      - cf_export HASURA_METADATA_DATABASE_NAME_PROD=$(pulumi stack output hasuraMetadataDatabaseName)
-      - cf_export HASURA_METADATA_DATABASE_ADDRESS_PROD=$(pulumi stack output hasuraMetadataDatabaseAddress)
 
-  buildArtifacts:
+  devParallel:
     type: "parallel"
+    stage: devDeploy
     steps:
       buildImage:
         title: "Building Hasura Engine Docker image"
@@ -66,15 +66,10 @@ steps:
             - secret_arn: "${{AWS_SECRET_ID_DEV}}"
               key: "metadataDbPassword"
               store_in: HASURA_METADATA_DATABASE_PASSWORD_DEV
-            - secret_arn: "${{AWS_SECRET_ID_PROD}}"
-              key: "hasuraAdminSecret"
-              store_in: HASURA_ADMIN_SECRET_PROD
-            - secret_arn: "${{AWS_SECRET_ID_PROD}}"
-              key: "metadataDbPassword"
-              store_in: HASURA_METADATA_DATABASE_PASSWORD_PROD
 
   devDeploy:
-    title: "Deploy to AWS EKS dev env"
+    title: "Deploy to AWS EKS dev namespace"
+    stage: devDeploy
     type: helm
     working_directory: "${{clone}}"
     arguments:
@@ -94,13 +89,96 @@ steps:
         - "metadataDatabase_address=${{HASURA_METADATA_DATABASE_ADDRESS_DEV}}"
         - "metadataDatabase_password=${{HASURA_METADATA_DATABASE_PASSWORD_DEV}}"
 
-  askForPermission:
+  askForStagPermission:
+    type: pending-approval
+    stage: stagDeploy
+    title: Deploy to staging?
+
+  stagePulumiUp:
+    title: "Pulumi Stag Up"
+    image: "pulumi/pulumi"
+    stage: stagDeploy
+    working_directory: "${{clone}}"
+    commands:
+      - npm install
+      - pulumi login
+      - pulumi stack select stag
+      - pulumi up --non-interactive --yes
+      - cf_export AWS_SECRET_ID_STAG=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export HASURA_METADATA_DATABASE_NAME_STAG=$(pulumi stack output hasuraMetadataDatabaseName)
+      - cf_export HASURA_METADATA_DATABASE_ADDRESS_STAG=$(pulumi stack output hasuraMetadataDatabaseAddress)
+
+  stagFetchSecrets:
+    title: "Fetch Stag AWS Secrets"
+    type: aws-secrets-manager
+    stage: stagDeploy
+    arguments:
+      AWS_DEFAULT_REGION: "${{AWS_DEFAULT_REGION}}"
+      secrets:
+        - secret_arn: "${{AWS_SECRET_ID_STAG}}"
+          key: "hasuraAdminSecret"
+          store_in: HASURA_ADMIN_SECRET_STAG
+        - secret_arn: "${{AWS_SECRET_ID_STAG}}"
+          key: "metadataDbPassword"
+          store_in: HASURA_METADATA_DATABASE_PASSWORD_STAG
+
+  stagDeploy:
+    title: "Deploy to AWS EKS stag namespace"
+    stage: stagDeploy
+    type: helm
+    working_directory: "${{clone}}"
+    arguments:
+      chart_name: helm
+      release_name: hasura-engine
+      helm_version: 3.6.1
+      namespace: stag
+      kube_context: wired-eks-prod
+      custom_values:
+        - "image_repository=${{AWS_ECR_REPO_URL}}"
+        - "image_tag=${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
+        - "database_dbName=${{DATA_SYNC_DATABASE_NAME}}"
+        - "database_address=${{DATA_SYNC_DATABASE_ADDRESS}}"
+        - "database_password=${{DATA_SYNC_DATABASE_PASSWORD}}"
+        - "hasura_adminSecret=${{HASURA_ADMIN_SECRET_DEV}}"
+        - "metadataDatabase_dbName=${{HASURA_METADATA_DATABASE_NAME_STAG}}"
+        - "metadataDatabase_address=${{HASURA_METADATA_DATABASE_ADDRESS_STAG}}"
+        - "metadataDatabase_password=${{HASURA_METADATA_DATABASE_PASSWORD_STAG}}"
+
+  askForProdPermission:
     type: pending-approval
     stage: prodDeploy
     title: Deploy to production?
 
+  prodPulumiUp:
+    title: "Pulumi Prod Up"
+    image: "pulumi/pulumi"
+    stage: prodDeploy
+    working_directory: "${{clone}}"
+    commands:
+      - npm install
+      - pulumi login
+      - pulumi stack select prod
+      - pulumi up --non-interactive --yes
+      - cf_export AWS_SECRET_ID_PROD=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export HASURA_METADATA_DATABASE_NAME_PROD=$(pulumi stack output hasuraMetadataDatabaseName)
+      - cf_export HASURA_METADATA_DATABASE_ADDRESS_PROD=$(pulumi stack output hasuraMetadataDatabaseAddress)
+
+  prodFetchSecrets:
+    title: "Fetch Stag AWS Secrets"
+    type: aws-secrets-manager
+    stage: prodDeploy
+    arguments:
+      AWS_DEFAULT_REGION: "${{AWS_DEFAULT_REGION}}"
+      secrets:
+        - secret_arn: "${{AWS_SECRET_ID_PROD}}"
+          key: "hasuraAdminSecret"
+          store_in: HASURA_ADMIN_SECRET_PROD
+        - secret_arn: "${{AWS_SECRET_ID_PROD}}"
+          key: "metadataDbPassword"
+          store_in: HASURA_METADATA_DATABASE_PASSWORD_PROD
+
   prodDeploy:
-    title: "Deploy to AWS EKS prod env"
+    title: "Deploy to AWS EKS prod namespace"
     stage: prodDeploy
     type: helm
     working_directory: "${{clone}}"

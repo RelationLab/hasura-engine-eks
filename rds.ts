@@ -42,7 +42,7 @@ export const hasuraMetadataRds = new aws.rds.Instance(
     engineVersion: "14.3",
     allocatedStorage: 5,
     instanceClass: "db.t3.small",
-    backupRetentionPeriod: 7,
+    backupRetentionPeriod: 2,
     backupWindow: "00:00-01:00",
     maintenanceWindow: "Mon:02:00-Mon:04:00",
     monitoringInterval: 30,
