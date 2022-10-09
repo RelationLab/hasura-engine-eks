@@ -16,6 +16,7 @@ type FriendRequestResult {
   status: Int!
 }
 
+
 type AddressWithLabelsResult {
   address: AddressResult!
   labels: LabelsResult!
