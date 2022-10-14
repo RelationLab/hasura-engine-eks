@@ -2,14 +2,12 @@ actions:
   - name: labels_query_addresses_action
     definition:
       kind: synchronous
-      #handler: http://ugc-backend:10002/ugc/public/v1/address/labels
       handler: http://wired-tag-query:10009/ugc/public/v1/address/labels
       forward_client_headers: true
       timeout: 300
   - name: address_query_labels_action
     definition:
       kind: synchronous
-      #handler: http://ugc-backend:10002/ugc/public/v1/address/label
       handler: http://wired-tag-query:10009/ugc/public/v1/address/label
       forward_client_headers: true
       timeout: 300
@@ -28,7 +26,6 @@ actions:
   - name: labels_count_action
     definition:
       kind: synchronous
-      #handler: http://ugc-backend:10002/ugc/public/v1/address/labels/count
       handler: http://wired-tag-query:10009/ugc/public/v1/address/labels/count
       forward_client_headers: true
       timeout: 300
