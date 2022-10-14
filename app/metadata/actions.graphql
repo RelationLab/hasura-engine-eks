@@ -37,6 +37,15 @@ type Query {
 }
 
 type Query {
+  labels_query_addresses_pressure_action(
+    base_id: Int
+    labels: [String!]
+    mode: String!
+    limit: Int
+  ): [AddressWithLabelsResult]
+}
+
+type Query {
   address_query_labels_action(address: String!): [AddressWithLabelsResult]
 }
 
