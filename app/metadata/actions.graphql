@@ -27,6 +27,21 @@ type AddressWithLabelsResult {
   hasCollect: Int
 }
 
+type AddressWithLabelsNextClickResult {
+    baseAddress:String
+    body:AddressWithLabelsResult!
+}
+
+type Query {
+  labels_query_next_click_addresses_action(
+    base_id: Int
+    baseAddress:String
+    labels: [String!]
+    mode: String!
+    limit: Int
+  ): AddressWithLabelsNextClickResult
+}
+
 type Query {
   labels_query_addresses_action(
     base_id: Int
