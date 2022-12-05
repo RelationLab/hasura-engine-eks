@@ -93,6 +93,7 @@ type DictionaryDescribeActionResult {
   refreshTime: Int
   arTxHash: String
   arStatus: String
+    isMyCollect;: Boolean
 }
 
 type Query {
