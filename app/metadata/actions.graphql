@@ -20,7 +20,7 @@ type FriendRequestResult {
 type AddressWithLabelsResult {
   id: Int!
   address: AddressResult!
-  labels: LabelsResult!
+  labels: [LabelsResult!]
   user_name: String
   user_introduction: String
   user_twitter: String
