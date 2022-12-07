@@ -16,7 +16,6 @@ type FriendRequestResult {
   status: Int!
 }
 
-
 type AddressWithLabelsResult {
   id: Int!
   address: AddressResult!
@@ -28,14 +27,14 @@ type AddressWithLabelsResult {
 }
 
 type AddressWithLabelsNextClickResult {
-    baseAddress:String
-    body:AddressWithLabelsResult!
+  baseAddress: String
+  body: AddressWithLabelsResult!
 }
 
 type Query {
   labels_query_next_click_addresses_action(
     base_id: Int
-    baseAddress:String
+    baseAddress: String
     labels: [String!]
     mode: String!
     limit: Int
@@ -93,7 +92,7 @@ type DictionaryDescribeActionResult {
   refreshTime: Int
   arTxHash: String
   arStatus: String
-    isMyCollect;: Boolean
+  isMyCollect: Boolean
 }
 
 type Query {
