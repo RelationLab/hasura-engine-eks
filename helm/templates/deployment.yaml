@@ -40,9 +40,9 @@ spec:
               value: "postgres://{{ .Values.metadataDatabase.user }}:{{ .Values.metadataDatabase.password }}@{{ .Values.metadataDatabase.address }}:{{ .Values.metadataDatabase.port }}/{{ .Values.metadataDatabase.dbName }}"
             {{ if trim .Values.hasura.adminSecret }}
             - name: HASURA_GRAPHQL_ADMIN_SECRET
-              value: {{ trim .Values.hasura.adminSecret }}
+              value: {{ trim .Values.hasura.adminSecret | quote }}
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
-              value: "true"
+              value: {{ .Values.hasura.enableConsole | quote }}
             {{ end }}
             - name: HASURA_GRAPHQL_DEV_MODE
               value: "false"
