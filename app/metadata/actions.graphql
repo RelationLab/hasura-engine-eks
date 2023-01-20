@@ -16,6 +16,21 @@ type FriendRequestResult {
   status: Int!
 }
 
+type AddressWithLabelsResultData {
+  id: Int!
+  address: AddressResult!
+  labels: [LabelsResult!]
+  user_name: String
+  user_introduction: String
+  user_twitter: String
+  hasCollect: Int
+}
+
+type AddressWithLabelsCountResult {
+  count: Int
+  data: [AddressWithLabelsResultData]
+}
+
 type AddressWithLabelsResult {
   id: Int!
   address: AddressResult!
@@ -182,7 +197,7 @@ type Query {
   query_by_address_action(
     from: String
     address: String!
-  ): [AddressWithLabelsResult]
+  ): AddressWithLabelsCountResult
 }
 
 type Query {
@@ -192,5 +207,5 @@ type Query {
     labels: [String!]
     mode: String!
     limit: Int
-  ): [AddressWithLabelsResult]
+  ): AddressWithLabelsCountResult
 }
