@@ -85,6 +85,7 @@ steps:
         - "database_address=${{DATA_SYNC_DATABASE_ADDRESS}}"
         - "database_password=${{DATA_SYNC_DATABASE_PASSWORD}}"
         - "hasura_adminSecret=${{HASURA_ADMIN_SECRET_DEV}}"
+        - "hasura_enableConsole=true"
         - "metadataDatabase_dbName=${{HASURA_METADATA_DATABASE_NAME_DEV}}"
         - "metadataDatabase_address=${{HASURA_METADATA_DATABASE_ADDRESS_DEV}}"
         - "metadataDatabase_password=${{HASURA_METADATA_DATABASE_PASSWORD_DEV}}"
