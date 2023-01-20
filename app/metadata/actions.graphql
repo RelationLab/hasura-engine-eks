@@ -16,7 +16,7 @@ type FriendRequestResult {
   status: Int!
 }
 
-type AddressWithLabelsResult {
+type AddressResponseWithLabelsResult {
   id: Int!
   address: AddressResult!
   labels: [LabelsResult!]
@@ -24,6 +24,11 @@ type AddressWithLabelsResult {
   user_introduction: String
   user_twitter: String
   hasCollect: Int
+}
+
+type AddressWithLabelsResult {
+  count: Int!
+  dataList: [AddressResponseWithLabelsResult!]
 }
 
 type AddressWithLabelsNextClickResult {
