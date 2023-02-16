@@ -2,6 +2,8 @@ type LabelsResult {
   name: String!
   content: String!
   source: String!
+  wiredType:String!
+  data:String!
 }
 
 type AddressResult {
