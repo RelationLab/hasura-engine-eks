@@ -1,16 +1,18 @@
-import { dataSyncStack, secretId } from "./base";
-import { ecrRepository } from "./ecr";
+import { appEnv } from "./env";
 import { hasuraMetadataRds } from "./rds";
+import { secret } from "./secret";
 
-export const hasuraEngineSecretId = secretId;
-export const dataSyncSecretId = dataSyncStack.getOutput("awsSecretId");
+export const awsSecretId = secret.id;
+export const dataSyncSecretId = appEnv.dataSyncStackRef.getOutput("awsSecretId");
 
-export const hasuraEngineRepositoryName = ecrRepository.name;
-export const hasuraEngineRepositoryUrl = ecrRepository.repositoryUrl;
+export const ecrRepositoryName = appEnv.name;
+export const ecrRepositoryUrl = appEnv.awsEcrStackRef.apply((stack) =>
+  stack.getOutput("ecrRepositories").apply((repos) => repos[appEnv.name])
+);
 
-export const dataSyncDatabaseName = dataSyncStack.getOutput("rdsDatabaseName");
+export const dataSyncDatabaseName = appEnv.dataSyncStackRef.getOutput("rdsDatabaseName");
 export const dataSyncDatabaseAddress =
-  dataSyncStack.getOutput("rdsDatabaseAddress");
+  appEnv.dataSyncStackRef.getOutput("rdsDatabaseAddress");
 
 export const hasuraMetadataDatabaseName = hasuraMetadataRds.dbName;
 export const hasuraMetadataDatabaseAddress = hasuraMetadataRds.address;
