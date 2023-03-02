@@ -1,13 +1,28 @@
 import * as aws from "@pulumi/aws";
 import * as random from "@pulumi/random";
-import { baseTags, baseConfig, networkingStack } from "./base";
+import { tags, appEnv } from "./env";
 
-const dataVpcSubnetIds = networkingStack.getOutput("dataVpcPrivateSubnetIds");
-
-const subnetGroup = new aws.rds.SubnetGroup(baseTags.Name, {
-  subnetIds: dataVpcSubnetIds,
-  tags: baseTags,
+const subnetGroup = new aws.rds.SubnetGroup(tags.Name, {
+  subnetIds: appEnv.networkingStackRef.getOutput("dataVpcPrivateSubnetIds"),
+  tags,
 });
+
+const securityGroup = new aws.ec2.SecurityGroup(tags.Name, {
+  vpcId: appEnv.networkingStackRef.getOutput("dataVpcId"),
+  ingress: [
+    {
+      fromPort: 5432,
+      toPort: 5432,
+      protocol: "tcp",
+      cidrBlocks: [
+        appEnv.networkingStackRef.getOutput("dataVpcCidrBlock"),
+        appEnv.networkingStackRef.getOutput("eksVpcCidrBlock"),
+      ],
+    },
+  ],
+  tags,
+});
+
 
 const finalSnapshotIdentifier = new random.RandomString(
   "finalSnapshotIdentifierRandom",
@@ -17,7 +32,7 @@ const finalSnapshotIdentifier = new random.RandomString(
   }
 ).result;
 
-const enhancedMonitoringRole = new aws.iam.Role(baseTags.Name, {
+const enhancedMonitoringRole = new aws.iam.Role(tags.Name, {
   assumeRolePolicy: {
     Version: "2012-10-17",
     Statement: [
@@ -31,13 +46,12 @@ const enhancedMonitoringRole = new aws.iam.Role(baseTags.Name, {
       },
     ],
   },
-  tags: baseTags,
+  tags,
 });
 
 export const hasuraMetadataRds = new aws.rds.Instance(
-  `${baseTags.Name}-metadata`,
+  `${tags.Name}-metadata`,
   {
-    tags: baseTags,
     engine: "postgres",
     engineVersion: "14.3",
     allocatedStorage: 5,
@@ -48,13 +62,14 @@ export const hasuraMetadataRds = new aws.rds.Instance(
     monitoringInterval: 30,
     monitoringRoleArn: enhancedMonitoringRole.arn,
     username: "postgres",
-    password: baseConfig.metadataDbPassword,
+    password: appEnv.metadataDbPassword,
     dbName: "metadata",
     finalSnapshotIdentifier,
     storageType: "gp2",
     skipFinalSnapshot: false,
     dbSubnetGroupName: subnetGroup.name,
-    vpcSecurityGroupIds: [networkingStack.getOutput("peeredSecurityGroupId")],
+    vpcSecurityGroupIds: [securityGroup.id],
+    tags,
   },
   { ignoreChanges: ["monitoringInterval"] }
 );

@@ -31,12 +31,12 @@ steps:
       - pulumi login
       - pulumi stack select dev
       - pulumi up --non-interactive --yes
-      - cf_export AWS_ECR_REPO_NAME=$(pulumi stack output hasuraEngineRepositoryName)
-      - cf_export AWS_ECR_REPO_URL=$(pulumi stack output hasuraEngineRepositoryUrl)
+      - cf_export AWS_ECR_REPO_NAME=$(pulumi stack output ecrRepositoryName)
+      - cf_export AWS_ECR_REPO_URL=$(pulumi stack output ecrRepositoryUrl)
       - cf_export AWS_DATA_SYNC_SECRET_ID=$(pulumi stack output dataSyncSecretId)
       - cf_export DATA_SYNC_DATABASE_NAME=$(pulumi stack output dataSyncDatabaseName)
       - cf_export DATA_SYNC_DATABASE_ADDRESS=$(pulumi stack output dataSyncDatabaseAddress)
-      - cf_export AWS_SECRET_ID_DEV=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export AWS_SECRET_ID_DEV=$(pulumi stack output awsSecretId)
       - cf_export HASURA_METADATA_DATABASE_NAME_DEV=$(pulumi stack output hasuraMetadataDatabaseName)
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_DEV=$(pulumi stack output hasuraMetadataDatabaseAddress)
 
@@ -50,7 +50,7 @@ steps:
         image_name: "${{AWS_ECR_REPO_NAME}}"
         working_directory: "${{clone}}/app"
         dockerfile: "Dockerfile"
-        tag: '${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}'
+        tag: "${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
       fetchSecrets:
         title: "Fetch AWS Secrets"
         type: aws-secrets-manager
@@ -105,7 +105,7 @@ steps:
       - pulumi login
       - pulumi stack select stag
       - pulumi up --non-interactive --yes
-      - cf_export AWS_SECRET_ID_STAG=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export AWS_SECRET_ID_STAG=$(pulumi stack output awsSecretId)
       - cf_export HASURA_METADATA_DATABASE_NAME_STAG=$(pulumi stack output hasuraMetadataDatabaseName)
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_STAG=$(pulumi stack output hasuraMetadataDatabaseAddress)
 
@@ -160,7 +160,7 @@ steps:
       - pulumi login
       - pulumi stack select prod
       - pulumi up --non-interactive --yes
-      - cf_export AWS_SECRET_ID_PROD=$(pulumi stack output hasuraEngineSecretId)
+      - cf_export AWS_SECRET_ID_PROD=$(pulumi stack output awsSecretId)
       - cf_export HASURA_METADATA_DATABASE_NAME_PROD=$(pulumi stack output hasuraMetadataDatabaseName)
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_PROD=$(pulumi stack output hasuraMetadataDatabaseAddress)
 
