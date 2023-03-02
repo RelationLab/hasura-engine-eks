@@ -69,10 +69,7 @@ type Query {
 
 type Query {
   labels_query_by_addresses_action(
-    base_id: Int
-    labels: [String!]
-    mode: String!
-    limit: Int
+    addresses: [String!]
   ): [AddressWithLabelsResult]
 }
 
