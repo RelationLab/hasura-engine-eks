@@ -1,1 +1,2 @@
 - "!include public_token_holding_uni.yaml"
+- "!include public_white_list_erc20_tag.yaml"

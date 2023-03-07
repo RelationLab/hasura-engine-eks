@@ -1,0 +1,3 @@
+table:
+  schema: public
+  name: white_list_erc20_tag
