@@ -23,7 +23,7 @@ steps:
 
   devPulumiUp:
     title: "Pulumi Output"
-    image: "pulumi/pulumi"
+    image: "pulumi/pulumi-nodejs:latest"
     stage: devDeploy
     working_directory: "${{clone}}"
     commands:
@@ -75,7 +75,7 @@ steps:
     arguments:
       chart_name: helm
       release_name: hasura-engine
-      helm_version: 3.6.1
+      helm_version: 3.9.0
       namespace: dev
       kube_context: wired-eks-prod
       custom_values:
@@ -131,7 +131,7 @@ steps:
     arguments:
       chart_name: helm
       release_name: hasura-engine
-      helm_version: 3.6.1
+      helm_version: 3.9.0
       namespace: stag
       kube_context: wired-eks-prod
       custom_values:
@@ -186,7 +186,7 @@ steps:
     arguments:
       chart_name: helm
       release_name: hasura-engine
-      helm_version: 3.6.1
+      helm_version: 3.9.0
       namespace: prod
       kube_context: wired-eks-prod
       custom_values:
