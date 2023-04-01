@@ -97,7 +97,7 @@ steps:
 
   stagePulumiUp:
     title: "Pulumi Stag Up"
-    image: "pulumi/pulumi"
+    image: "pulumi/pulumi-nodejs:latest"
     stage: stagDeploy
     working_directory: "${{clone}}"
     commands:
@@ -153,7 +153,7 @@ steps:
 
   prodPulumiUp:
     title: "Pulumi Prod Up"
-    image: "pulumi/pulumi"
+    image: "pulumi/pulumi-nodejs:latest"
     stage: prodDeploy
     working_directory: "${{clone}}"
     commands:
