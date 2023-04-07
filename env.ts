@@ -21,17 +21,10 @@ export const appEnv = {
   maintainer,
   metadataDbPassword: config.requireSecret("metadataDbPassword"),
   hasuraAdminSecret: config.getSecret("hasuraAdminSecret"),
-  awsEcrStackRef: aws
-    .getRegionOutput()
-    .apply(
-      (res) =>
-        new pulumi.StackReference(`${maintainer}/wired-aws-ecr/${res.name}`)
-    ),
-  networkingStackRef: new pulumi.StackReference(
-    `${maintainer}/relation-networking/dev`
-  ),
-  dataSyncStackRef: new pulumi.StackReference(
-    `${maintainer}/relation-data-sync/dev`
-  )
+  awsEcrStackRef: new pulumi.StackReference(`${maintainer}/wired-aws-ecr/prod`),
+  networkingStackRef: new pulumi.StackReference(`${maintainer}/relation-networking/prod`),
+  // dataSyncStackRef: new pulumi.StackReference(
+  //   `${ maintainer } / relation - data - sync / prod`
+  // )
 };
 
