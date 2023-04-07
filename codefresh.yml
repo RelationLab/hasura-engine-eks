@@ -22,7 +22,7 @@ steps:
     git: "github"
 
   devPulumiUp:
-    title: "Pulumi Output"
+    title: "Pulumi Output Dev"
     image: "pulumi/pulumi-nodejs:latest"
     stage: devDeploy
     working_directory: "${{clone}}"
@@ -30,7 +30,6 @@ steps:
       - npm install
       - pulumi login
       - pulumi stack select dev
-      - pulumi up --non-interactive --yes
       - cf_export AWS_ECR_REPO_NAME=$(pulumi stack output ecrRepositoryName)
       - cf_export AWS_ECR_REPO_URL=$(pulumi stack output ecrRepositoryUrl)
       - cf_export AWS_DATA_SYNC_SECRET_ID=$(pulumi stack output dataSyncSecretId)
@@ -95,8 +94,8 @@ steps:
     stage: stagDeploy
     title: Deploy to staging?
 
-  stagePulumiUp:
-    title: "Pulumi Stag Up"
+  stagePulumiOutputs:
+    title: "Pulumi Outputs Stag"
     image: "pulumi/pulumi-nodejs:latest"
     stage: stagDeploy
     working_directory: "${{clone}}"
@@ -104,7 +103,6 @@ steps:
       - npm install
       - pulumi login
       - pulumi stack select stag
-      - pulumi up --non-interactive --yes
       - cf_export AWS_SECRET_ID_STAG=$(pulumi stack output awsSecretId)
       - cf_export HASURA_METADATA_DATABASE_NAME_STAG=$(pulumi stack output hasuraMetadataDatabaseName)
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_STAG=$(pulumi stack output hasuraMetadataDatabaseAddress)
@@ -151,8 +149,8 @@ steps:
     stage: prodDeploy
     title: Deploy to production?
 
-  prodPulumiUp:
-    title: "Pulumi Prod Up"
+  prodPulumiOutputs:
+    title: "Pulumi Outputs Prod"
     image: "pulumi/pulumi-nodejs:latest"
     stage: prodDeploy
     working_directory: "${{clone}}"
@@ -160,7 +158,6 @@ steps:
       - npm install
       - pulumi login
       - pulumi stack select prod
-      - pulumi up --non-interactive --yes
       - cf_export AWS_SECRET_ID_PROD=$(pulumi stack output awsSecretId)
       - cf_export HASURA_METADATA_DATABASE_NAME_PROD=$(pulumi stack output hasuraMetadataDatabaseName)
       - cf_export HASURA_METADATA_DATABASE_ADDRESS_PROD=$(pulumi stack output hasuraMetadataDatabaseAddress)
