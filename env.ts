@@ -1,4 +1,3 @@
-import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 const stack = pulumi.getStack();
@@ -13,18 +12,18 @@ export const tags = {
   PulumiStack: `Pulumi-${stack}`,
 };
 
-
 export const appEnv = {
   name: "wired-hasura-engine",
   stack,
   dbName,
   maintainer,
   metadataDbPassword: config.requireSecret("metadataDbPassword"),
-  hasuraAdminSecret: config.getSecret("hasuraAdminSecret"),
+  hasuraAdminSecret: config.requireSecret("hasuraAdminSecret"),
   awsEcrStackRef: new pulumi.StackReference(`${maintainer}/wired-aws-ecr/prod`),
-  networkingStackRef: new pulumi.StackReference(`${maintainer}/relation-networking/prod`),
-  // dataSyncStackRef: new pulumi.StackReference(
-  //   `${ maintainer } / relation - data - sync / prod`
-  // )
+  networkingStackRef: new pulumi.StackReference(
+    `${maintainer}/relation-networking/prod`
+  ),
+  dataSyncStackRef: new pulumi.StackReference(
+    `${maintainer}/relation-data-sync/prod`
+  ),
 };
-
