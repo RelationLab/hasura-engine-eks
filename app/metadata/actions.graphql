@@ -43,6 +43,8 @@ type AddressWithLabelsResult {
   user_introduction: String
   user_twitter: String
   hasCollect: Int
+  sim_value: Float
+  sim_vector: Float
 }
 
 type AddressWithLabelsNextClickResult {
