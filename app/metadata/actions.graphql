@@ -3,7 +3,15 @@ type LabelsResult {
   content: String!
   source: String!
   wiredType: String!
+  oneWiredType: OneWiredType!
+  twoWiredType: String!
   data: String!
+}
+
+type OneWiredType {
+  platform: Int!
+  asset: Int!
+  action: Int!
 }
 
 type AddressResult {
@@ -26,6 +34,17 @@ type AddressWithLabelsResultData {
   user_introduction: String
   user_twitter: String
   hasCollect: Int
+  labelSize: Int
+  day3LabelSize: Int
+  day7LabelSize: Int
+  day15LabelSize: Int
+  month1LabelSize: Int
+  month3LabelSize: Int
+  month6LabelSize: Int
+  year1LabelSize: Int
+  year2LabelSize: Int
+  ugcLabelSize: Int
+  otherPlatformLabelSize: Int
   sim_value: Float
   sim_vector: Float
 }
@@ -43,6 +62,17 @@ type AddressWithLabelsResult {
   user_introduction: String
   user_twitter: String
   hasCollect: Int
+  labelSize: Int
+  day3LabelSize: Int
+  day7LabelSize: Int
+  day15LabelSize: Int
+  month1LabelSize: Int
+  month3LabelSize: Int
+  month6LabelSize: Int
+  year1LabelSize: Int
+  year2LabelSize: Int
+  ugcLabelSize: Int
+  otherPlatformLabelSize: Int
   sim_value: Float
   sim_vector: Float
 }
