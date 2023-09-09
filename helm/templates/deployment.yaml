@@ -44,6 +44,10 @@ spec:
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
               value: {{ .Values.hasura.enableConsole | quote }}
             {{ end }}
+            - name: HASURA_GRAPHQL_ENABLED_LOG_TYPES
+              value: "startup"
+            - name: HASURA_GRAPHQL_LOG_LEVEL
+              value: "error"
             - name: HASURA_GRAPHQL_DEV_MODE
               value: "false"
           ports:
